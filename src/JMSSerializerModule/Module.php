@@ -184,7 +184,7 @@ class Module implements
                     return $vistor;
                 },
                 'jms_serializer.json_deserialization_visitor' => function (ServiceManager $sm) {
-                    return new JsonDeserializationVisitor($sm->get('jms_serializer.naming_strategy'), $sm->get('jms_serializer.object_constructor'));
+                    return new JsonDeserializationVisitor($sm->get('jms_serializer.naming_strategy'));
                 },
                 'jms_serializer.xml_serialization_visitor' => function(ServiceManager $sm) {
                     return new XmlSerializationVisitor($sm->get('jms_serializer.naming_strategy'));
@@ -194,7 +194,7 @@ class Module implements
                     $options = new Visitors($options['jms_serializer']['visitors']);
 
                     $xmlOptions = $options->getXml();
-                    $visitor = new XmlDeserializationVisitor($sm->get('jms_serializer.naming_strategy'), $sm->get('jms_serializer.object_constructor'));
+                    $visitor = new XmlDeserializationVisitor($sm->get('jms_serializer.naming_strategy'));
                     $visitor->setDoctypeWhitelist($xmlOptions['doctype_whitelist']);
 
                     return $visitor;
