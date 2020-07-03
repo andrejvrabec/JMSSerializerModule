@@ -5,6 +5,7 @@ namespace JMSSerializerModule\Service;
 use InvalidArgumentException;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
+use JMSSerializerModule\Options\Handlers;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -18,7 +19,7 @@ class HandlerRegistryFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var $options \JMSSerializerModule\Options\Handlers */
+        /** @var $options Handlers */
         $options      = $this->getOptions($serviceLocator, 'handlers');
         $handlerRegistry = new HandlerRegistry();
 

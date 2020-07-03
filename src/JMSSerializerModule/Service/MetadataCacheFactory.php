@@ -2,6 +2,7 @@
 
 namespace JMSSerializerModule\Service;
 
+use JMSSerializerModule\Options\Metadata;
 use Metadata\Cache\FileCache;
 use RuntimeException;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -16,17 +17,17 @@ class MetadataCacheFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var $options \JMSSerializerModule\Options\Metadata */
+        /** @var $options Metadata */
         $options = $this->getOptions($serviceLocator, 'metadata');
-        if ($options->getCache() == 'none') {
+        if ($options->getCache() === 'none') {
             return null;
-        } elseif ($options->getCache() == 'file') {
+        }
+
+        if ($options->getCache() === 'file') {
             $fileCache = $options->getFileCache();
             $dir = $fileCache['dir'];
-            if (!file_exists($dir)) {
-                if (!$rs = @mkdir($dir, 0777, true)) {
-                    throw new RuntimeException(sprintf('Could not create cache directory "%s".', $dir));
-                }
+            if (!file_exists($dir) && !$rs = @mkdir($dir, 0777, true)) {
+                throw new RuntimeException(sprintf('Could not create cache directory "%s".', $dir));
             }
             return new FileCache($dir);
         }

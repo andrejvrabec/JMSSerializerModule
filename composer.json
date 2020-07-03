@@ -37,7 +37,7 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.*",
         "doctrine/doctrine-module": ">=0.5.1",
-        "jms/serializer": "~1.6"
+        "jms/serializer": "^3.6"
     },
     "require-dev": {
         "zendframework/zend-developer-tools": "dev-master"
