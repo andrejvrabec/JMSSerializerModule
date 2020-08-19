@@ -24,11 +24,9 @@ class SerializerFactory extends AbstractFactory
 
         return new Serializer(
             $serviceLocator->get('jms_serializer.metadata_factory'),
-            $serviceLocator->get('jms_serializer.handler_registry'),
-            $serviceLocator->get('jms_serializer.object_constructor'),
-            $this->buildMap($serviceLocator, $options->getSerialization()),
-            $this->buildMap($serviceLocator, $options->getDeserialization()),
-            $serviceLocator->get('jms_serializer.event_dispatcher')
+            array(),
+            $options->getSerialization(),
+            $options->getDeserialization()
         );
     }
 
