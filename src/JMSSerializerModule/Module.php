@@ -15,7 +15,10 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\Common\Cache\Cache;
+use JMS\Serializer\Builder\DefaultDriverFactory;
+use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\DateHandler;
+use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Metadata\Driver\AnnotationDriver;
@@ -23,6 +26,7 @@ use JMS\Serializer\Naming\CamelCaseNamingStrategy;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Visitor\Factory\JsonDeserializationVisitorFactory;
 use JMS\Serializer\Visitor\Factory\JsonSerializationVisitorFactory;
 use JMS\Serializer\Visitor\Factory\XmlDeserializationVisitorFactory;
@@ -106,7 +110,7 @@ class Module implements
                 'jms_serializer.event_dispatcher' => new EventDispatcherFactory(),
                 'jms_serializer.metadata.cache' => new MetadataCacheFactory(),
                 'jms_serializer.metadata.xml_driver' => new MetadataDriverFactory('JMS\Serializer\Metadata\Driver\XmlDriver'),
-                'jms_serializer.metadata.php_driver' => new MetadataDriverFactory('JMS\Serializer\Metadata\Driver\PhpDriver'),
+                'jms_serializer.metadata.yaml_driver' => new MetadataDriverFactory('JMS\Serializer\Metadata\Driver\YamlDriver'),
                 'jms_serializer.metadata.file_locator' => function (ServiceManager $sm) {
                     $options = $sm->get('Configuration');
                     $options = new Metadata($options['jms_serializer']['metadata']);
@@ -141,10 +145,10 @@ class Module implements
                 },
                 'jms_serializer.metadata.chain_driver' => function (ServiceManager $sm) {
                     $annotationDriver = $sm->get('jms_serializer.metadata.annotation_driver');
-                    $phpDriver = $sm->get('jms_serializer.metadata.php_driver');
+                    $yamlDriver = $sm->get('jms_serializer.metadata.yaml_driver');
                     $xmlDriver = $sm->get('jms_serializer.metadata.xml_driver');
 
-                    return new DriverChain(array($xmlDriver, $phpDriver, $annotationDriver));
+                    return new DriverChain(array($xmlDriver, $yamlDriver, $annotationDriver));
                 },
                 'jms_serializer.metadata.lazy_loading_driver' => function(ServiceManager $sm) {
                     return new LazyLoadingDriver($sm, 'jms_serializer.metadata_driver');
@@ -168,9 +172,7 @@ class Module implements
                     return new IdenticalPropertyNamingStrategy();
                 },
                 'jms_serializer.serialized_name_annotation_strategy' => function (ServiceManager $sm) {
-                    
                     $options = $sm->get('Configuration');
-                    
                     if (isset($options['jms_serializer']['naming_strategy']) && $options['jms_serializer']['naming_strategy'] === 'identical') {
                         /** @var IdenticalPropertyNamingStrategy $namingStrategy */
                         $namingStrategy = $sm->get('jms_serializer.identical_naming_strategy');
@@ -184,7 +186,7 @@ class Module implements
                     return new SerializedNameAnnotationStrategy($namingStrategy);
                 },
                 'jms_serializer.naming_strategy' => 'JMSSerializerModule\Service\NamingStrategyFactory',
-                'jms_serializer.json_serialization_visitor' => function(ServiceManager $sm) {
+                'jms_serializer.json_serialization_visitor_factory' => function(ServiceManager $sm) {
                     $options = $sm->get('Configuration');
                     $options = new Visitors($options['jms_serializer']['visitors']);
 
@@ -192,19 +194,19 @@ class Module implements
                     $visitorFactory = new JsonSerializationVisitorFactory();
                     $visitorFactory->setOptions($jsonOptions['options']);
 
-                    return $visitorFactory->getVisitor();
+                    return $visitorFactory;
                 },
-                'jms_serializer.json_deserialization_visitor' => function (ServiceManager $sm) {
+                'jms_serializer.json_deserialization_visitor_factory' => function (ServiceManager $sm) {
                     $visitorFactory = new JsonDeserializationVisitorFactory();
 
-                    return $visitorFactory->getVisitor();
+                    return $visitorFactory;
                 },
-                'jms_serializer.xml_serialization_visitor' => function(ServiceManager $sm) {
+                'jms_serializer.xml_serialization_visitor_factory' => function(ServiceManager $sm) {
                     $visitorFactory = new XmlSerializationVisitorFactory();
 
-                    return $visitorFactory->getVisitor();
+                    return $visitorFactory;
                 },
-                'jms_serializer.xml_deserialization_visitor' => function(ServiceManager $sm) {
+                'jms_serializer.xml_deserialization_visitor_factory' => function(ServiceManager $sm) {
                     $options = $sm->get('Configuration');
                     $options = new Visitors($options['jms_serializer']['visitors']);
                     $xmlOptions = $options->getXml();
@@ -213,7 +215,24 @@ class Module implements
                     $visitorFactory->setDoctypeWhitelist($xmlOptions['doctype_whitelist']);
                     $visitorFactory->setOptions($xmlOptions['options']);
 
-                    return $visitorFactory->getVisitor();
+                    return $visitorFactory;
+                },
+                'jms_serializer.default_driver_factory' => function(ServiceManager $sm) {
+                    return new DefaultDriverFactory(
+                        $sm->get('jms_serializer.naming_strategy')
+                    );
+                },
+                'jms_serializer.builder' => function(ServiceManager $sm) {
+                    /** @var HandlerRegistry $handlerRegistry */
+                    $handlerRegistry = $sm->get('jms_serializer.handler_registry');
+
+                    /** @var EventDispatcher $eventDispatcher */
+                    $eventDispatcher = $sm->get('jms_serializer.event_dispatcher');
+
+                    return new SerializerBuilder(
+                        $handlerRegistry,
+                        $eventDispatcher
+                    );
                 },
                 'jms_serializer.serializer' => 'JMSSerializerModule\Service\SerializerFactory',
             ),
