@@ -23,6 +23,7 @@ class SerializerFactory extends AbstractFactory
         /** @var $options \JMSSerializerModule\Options\Visitors */
         $options = $this->getOptions($serviceLocator, 'visitors');
 
+
         /** @var SerializerBuilder $builder */
         $builder = $serviceLocator->get('jms_serializer.builder');
 
@@ -41,6 +42,7 @@ class SerializerFactory extends AbstractFactory
         $builder->setMetadataCache($serviceLocator->get('jms_serializer.metadata.cache'));
 
         return $builder->build();
+
     }
 
     /**
