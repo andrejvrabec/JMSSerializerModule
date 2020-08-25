@@ -186,7 +186,7 @@ class Module implements
                     return new SerializedNameAnnotationStrategy($namingStrategy);
                 },
                 'jms_serializer.naming_strategy' => 'JMSSerializerModule\Service\NamingStrategyFactory',
-                'jms_serializer.json_serialization_visitor_factory' => function(ServiceManager $sm) {
+                'jms_serializer.json_serialization_visitor' => function(ServiceManager $sm) {
                     $options = $sm->get('Configuration');
                     $options = new Visitors($options['jms_serializer']['visitors']);
 
@@ -196,17 +196,17 @@ class Module implements
 
                     return $visitorFactory;
                 },
-                'jms_serializer.json_deserialization_visitor_factory' => function (ServiceManager $sm) {
+                'jms_serializer.json_deserialization_visitor' => function (ServiceManager $sm) {
                     $visitorFactory = new JsonDeserializationVisitorFactory();
 
                     return $visitorFactory;
                 },
-                'jms_serializer.xml_serialization_visitor_factory' => function(ServiceManager $sm) {
+                'jms_serializer.xml_serialization_visitor' => function(ServiceManager $sm) {
                     $visitorFactory = new XmlSerializationVisitorFactory();
 
                     return $visitorFactory;
                 },
-                'jms_serializer.xml_deserialization_visitor_factory' => function(ServiceManager $sm) {
+                'jms_serializer.xml_deserialization_visitor' => function(ServiceManager $sm) {
                     $options = $sm->get('Configuration');
                     $options = new Visitors($options['jms_serializer']['visitors']);
                     $xmlOptions = $options->getXml();
