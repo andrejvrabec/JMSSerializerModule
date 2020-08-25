@@ -43,15 +43,15 @@ return array(
         ),
         'visitors' => array(
             'json' => array(
-                'options' => 0
+                'options' => 0,
             ),
             'xml' => array(
                 'doctype_whitelist' => array(),
+                'options' => 0,
             ),
             'serialization' => array(
                 'json' => 'jms_serializer.json_serialization_visitor',
                 'xml' => 'jms_serializer.xml_serialization_visitor',
-                'yml' => 'jms_serializer.yaml_serialization_visitor',
             ),
             'deserialization' => array(
                 'json' => 'jms_serializer.json_deserialization_visitor',

@@ -8,6 +8,7 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\Handler\DateHandler;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
+use JMSSerializerModule\Options\Handlers;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -21,7 +22,7 @@ class EventDispatcherFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var $options \JMSSerializerModule\Options\Handlers */
+        /** @var $options Handlers */
         $options      = $this->getOptions($serviceLocator, 'eventdispatcher');
         $handlerRegistry = new EventDispatcher();
 
