@@ -50,12 +50,12 @@ return array(
                 'options' => 0,
             ),
             'serialization' => array(
-                'json' => 'jms_serializer.json_serialization_visitor',
-                'xml' => 'jms_serializer.xml_serialization_visitor',
+                'json' => 'jms_serializer.json_serialization_visitor_factory',
+                'xml' => 'jms_serializer.xml_serialization_visitor_factory',
             ),
             'deserialization' => array(
-                'json' => 'jms_serializer.json_deserialization_visitor',
-                'xml' => 'jms_serializer.xml_deserialization_visitor',
+                'json' => 'jms_serializer.json_deserialization_visitor_factory',
+                'xml' => 'jms_serializer.xml_deserialization_visitor_factory',
             ),
         )
     ),
